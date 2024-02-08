@@ -48,5 +48,14 @@ middlewares.handleBadPayload  = (err, req, res, next) => {
   }
 };
 
+middlewares.isAuthPresent = (req, res, next) => {
+  console.log("isAuthPresent middleware called");
+  // console.log(req.headers.authorization);
+  if (req.headers.authorization) {
+    return res.status(400).end();
+  }
+  next();
+};
+
 
 module.exports = middlewares;
