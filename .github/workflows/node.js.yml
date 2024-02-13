@@ -18,3 +18,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: echo Welcome to CSYE 6200!
+        run: exit 1
+      - run: echo This should not work!!
+
