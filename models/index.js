@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -18,7 +20,7 @@ const createDatabaseIfNotPresent = async () => {
         console.log('Connected to MySQL');
         await connection.query(`CREATE DATABASE IF NOT EXISTS \`${database}\`;`);
         console.log(`Database '${database}' created or already exists.`);
-
+        await connection.close();
         db.sequelize.sync({ alter: true })
             .then(() => {
                 console.log("db.sequelize.sync called from createDatabaseIfNotPresent()");
