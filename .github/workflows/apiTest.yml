@@ -1,0 +1,42 @@
+name: Node.js CI - API Test
+
+on: [pull_request, push]
+
+jobs:
+  server-api:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_DATABASE: ${{ secrets.DB_NAME }}
+          MYSQL_USER: ${{ secrets.DB_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_ROOT_PASSWORD }}
+        ports:
+          - ${{ secrets.DB_PORT }}:${{ secrets.DB_PORT }}
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Creating an .env file
+        run: |
+          touch .env
+          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
+          echo DB_USERNAME=${{ secrets.DB_USERNAME }}>> .env
+          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '21.x'
+
+      - name: Running npm install
+        run: npm ci
+
+      - name: Installing Test Dependencies
+        run: npm i -g -D jest supertest
+
+      - name: Running API Tests
+        run: npm test

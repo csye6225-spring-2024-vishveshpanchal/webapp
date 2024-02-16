@@ -34,7 +34,13 @@ const createDatabaseIfNotPresent = async () => {
     }
 }
 
-createDatabaseIfNotPresent();
+const closeDatabaseConnection = async () => {
+    try {
+        await db.sequelize.close();
+    } catch (error) {
+        console.error(`Error closing database: ${error.message}`);
+    }
+};
 
 if (config.use_env_variable) {
     sequelize = new Sequelize(process.env[config.use_env_variable], config);
@@ -66,5 +72,7 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+db.createDatabaseIfNotPresent = createDatabaseIfNotPresent;
+db.closeDatabaseConnection = closeDatabaseConnection;
 
 module.exports = db;
