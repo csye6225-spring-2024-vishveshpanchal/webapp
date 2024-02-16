@@ -26,13 +26,13 @@ jobs:
       - name: Creating an .env file
         run: |
           touch .env
-          echo NODE_ENV=development >> .env
+          echo NODE_ENV=test >> .env
           echo PORT=3000 >> .env
-          echo DB_HOST=localhost >> .env
-          echo DB_PORT=3306 >> .env
-          echo DB_NAME=${{ secrets.DB_NAME }} >> .env
-          echo DB_USERNAME=${{ secrets.DB_USERNAME }}>> .env
-          echo DB_PASSWORD=${{ secrets.DB_PASSWORD }} >> .env
+          echo DB_HOST_TEST=localhost >> .env
+          echo DB_PORT_TEST=3306 >> .env
+          echo DB_NAME_TEST=${{ secrets.DB_NAME }} >> .env
+          echo DB_USERNAME_TEST=${{ secrets.DB_USERNAME }}>> .env
+          echo DB_PASSWORD_TEST=${{ secrets.DB_PASSWORD }} >> .env
           
       - name: Use Node.js
         uses: actions/setup-node@v3
