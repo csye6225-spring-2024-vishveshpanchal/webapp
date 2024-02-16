@@ -22,6 +22,7 @@ npm i sequelize-cli -D
 npx sequelize-cli init
 npm i bcrypt
 npm i jest
+npm i -D supertest
 ```
 * Rename app/config/config.json file to app/config/config.js
 * Changing relevant code while following steps from the [reference YouTube video](https://www.youtube.com/watch?v=VyEKwp6Q4fY)
