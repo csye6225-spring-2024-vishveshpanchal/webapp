@@ -11,28 +11,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Original
-// db.sequelize.sync()
-//     .then(() => {
-//         app.listen(PORT, () => {
-//             console.log(`Application listening on port ${PORT}`);
-//         });
-// })
-//     .catch((error) => {
-//         console.log("Error connecting to database!");
-//         console.log(error);
-// });
-db.sequelize.sync({ alter: true })
-    .then(() => {
-        console.log("db.sequelize.sync called from app/index.js");
-        // Commented because Database issue
-        // app.listen(PORT, () => {
-        //     console.log(`Application listening on port ${PORT}`);
-        // });
-    })
-    .catch((error) => {
-        console.log("Error connecting to database!");
-        console.log(error);
+db.createDatabaseIfNotPresent().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Application listening on port ${PORT}`);
+    });
+}).catch(() => {
+    console.log("Error at createDatabaseIfNotPresent at index.js");
 });
 
 // Middlewares handling
@@ -45,6 +29,6 @@ app.use('/v1/user', routes.user);
 app.use('/*', routes.random);
 
 
-app.listen(PORT, () => {
-    console.log(`Application listening on port ${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Application listening on port ${PORT}`);
+// });
