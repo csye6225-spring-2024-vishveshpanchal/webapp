@@ -16,7 +16,7 @@ beforeAll(async () => {
   const userObj = {
     first_name: "Vishvesh",
     last_name: "Panchal",
-    username: "vap3333@gmail.com",
+    username: "vap4@gmail.com",
     password: "vap@10",
   };
 
