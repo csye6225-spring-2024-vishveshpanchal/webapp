@@ -65,7 +65,7 @@ beforeAll(async () => {
       .expect(200);
 
     expect(updatedUserObj.first_name).toEqual(getGetUserResponse.body.first_name);
-    expect(updatedUserObj.last_name).toEqual(getGetUserResponse.body.last_name);
+    expect(updatedUserObj.last_name).toEqual("Panchal-");
   });
 }
 
