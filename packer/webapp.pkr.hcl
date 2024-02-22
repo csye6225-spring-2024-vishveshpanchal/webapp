@@ -52,6 +52,37 @@ build {
       "./scripts/install_services.sh",
       "./scripts/creating_webapp_env.sh",
       "./scripts/install_npm.sh",
+    ]
+    environment_vars = [
+      "NODE_ENV=${var.webapp_node_env}",
+      "PORT=${var.webapp_port}",
+      "DB_HOST=${var.webapp_db_host}",
+      "DB_PORT=${var.webapp_db_port}",
+      "DB_USERNAME=${var.webapp_db_username}",
+      "DB_PASSWORD=${var.webapp_db_password}",
+      "DB_NAME=${var.webapp_db_name}",
+      "DB_HOST_TEST=${var.webapp_db_host_test}",
+      "DB_PORT_TEST=${var.webapp_db_port_test}",
+      "DB_USERNAME_TEST=${var.webapp_db_username_test}",
+      "DB_PASSWORD_TEST=${var.webapp_db_password_test}",
+      "DB_NAME_TEST=${var.webapp_db_name_test}",
+      "DB_HOST_PROD=${var.webapp_db_host_prod}",
+      "DB_PORT_PROD=${var.webapp_db_port_prod}",
+      "DB_USERNAME_PROD=${var.webapp_db_username_prod}",
+      "DB_PASSWORD_PROD=${var.webapp_db_password_prod}",
+      "DB_NAME_PROD=${var.webapp_db_name_prod}",
+    ]
+  }
+
+  provisioner "file" {
+    source      = "./csye6225.service"
+    destination = "/tmp/csye6225.service"
+  }
+
+  provisioner "shell" {
+    scripts = [
+      "./scripts/moving_service.sh",
+      "./scripts/start_service.sh",
       "./scripts/run_tests.sh",
     ]
   }

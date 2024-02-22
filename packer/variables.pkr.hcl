@@ -29,3 +29,71 @@ variable "centos_image_name" {
 variable "centos_ssh_username" {
   type = string
 }
+
+variable "webapp_node_env" {
+  type = string
+}
+
+variable "webapp_port" {
+  type = number
+}
+
+variable "webapp_db_host" {
+  type = string
+}
+
+variable "webapp_db_port" {
+  type = number
+}
+
+variable "webapp_db_username" {
+  type = string
+}
+
+variable "webapp_db_password" {
+  type = string
+}
+
+variable "webapp_db_name" {
+  type = string
+}
+
+variable "webapp_db_host_test" {
+  type = string
+}
+
+variable "webapp_db_port_test" {
+  type = number
+}
+
+variable "webapp_db_username_test" {
+  type = string
+}
+
+variable "webapp_db_password_test" {
+  type = string
+}
+
+variable "webapp_db_name_test" {
+  type = string
+}
+
+variable "webapp_db_host_prod" {
+  type = string
+}
+
+variable "webapp_db_port_prod" {
+  type = string
+}
+
+variable "webapp_db_username_prod" {
+  type = string
+}
+
+variable "webapp_db_password_prod" {
+  type = string
+}
+
+variable "webapp_db_name_prod" {
+  type = string
+}
