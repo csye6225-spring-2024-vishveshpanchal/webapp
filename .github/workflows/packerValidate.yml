@@ -1,0 +1,33 @@
+name: Packer Validate
+
+on: [pull_request]
+
+jobs:
+    fmt-check:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: packer
+        name: Packer Check Formatting
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Packer fmt
+              run: packer fmt -check $GITHUB_WORKSPACE/packer/.
+
+    validate:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: packer
+        name: Validate Packer Configuration
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Packer Init
+              run: packer init $GITHUB_WORKSPACE/packer/.
+
+            - name: Packer Validate
+              run: 'packer validate -var "centos_project_id=${{ secrets.GCP_WEBAPP_PROJECT_ID }}" -var "centos_source_image_family=${{ secrets.GCP_WEBAPP_SOURCE_IMAGE_FAMILY }}" -var "centos_zone=${{ secrets.GCP_WEBAPP_ZONE }}" -var "centos_disable_default_service_account=${{ secrets.GCP_WEBAPP_DISABLE_DEFAULT_SA }}" -var "centos_region=${{ secrets.GCP_WEBAPP_REGION }}" -var "centos_machine_type=${{ secrets.GCP_WEBAPP_MACHINE_TYPE }}" -var "centos_image_name=${{ secrets.GCP_WEBAPP_IMAGE_NAME }}" -var "centos_ssh_username=${{ secrets.GCP_WEBAPP_SSH_USERNAME }}" -var "webapp_node_env=${{ secrets.WEBAPP_NODE_ENV }}" -var "webapp_port=${{ secrets.WEBAPP_PORT }}" -var "webapp_db_host=${{ secrets.WEBAPP_DB_HOST }}" -var "webapp_db_port=${{ secrets.WEBAPP_DB_PORT }}" -var "webapp_db_username=${{ secrets.WEBAPP_DB_USERNAME }}" -var "webapp_db_password=${{ secrets.WEBAPP_DB_PASSWORD }}" -var "webapp_db_name=${{ secrets.WEBAPP_DB_NAME }}" -var "webapp_db_host_test=${{ secrets.WEBAPP_DB_HOST_TEST }}" -var "webapp_db_port_test=${{ secrets.WEBAPP_DB_PORT_TEST }}" -var "webapp_db_username_test=${{ secrets.WEBAPP_DB_USERNAME_TEST }}" -var "webapp_db_password_test=${{ secrets.WEBAPP_DB_PASSWORD_TEST }}" -var "webapp_db_name_test=${{ secrets.WEBAPP_DB_NAME_TEST }}" -var "webapp_db_host_prod=${{ secrets.WEBAPP_DB_HOST_PROD }}" -var "webapp_db_port_prod=${{ secrets.WEBAPP_DB_PORT_PROD }}" -var "webapp_db_username_prod=${{ secrets.WEBAPP_DB_USERNAME_PROD }}" -var "webapp_db_password_prod=${{ secrets.WEBAPP_DB_PASSWORD_PROD }}" -var "webapp_db_name_prod=${{ secrets.WEBAPP_DB_NAME_PROD }}" $GITHUB_WORKSPACE/packer/. '
