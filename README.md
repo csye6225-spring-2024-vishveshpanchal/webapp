@@ -36,3 +36,11 @@ npm i -D supertest
 ```
 zip -r webapp-fork.zip webapp-fork -x ./webapp-fork/node_modules/\* -x ./webapp-fork/migrations/\* -x ./webapp-fork/.env -x ./webapp-fork/seeders/\* -x ./webapp-fork/.git/\* -x ./webapp-fork/.github/\*
 ```
+
+
+## Packer
+* https://developer.hashicorp.com/packer/integrations/hashicorp/googlecompute
+* https://cloud.google.com/sdk/docs/install-sdk
+* https://cloud.google.com/compute/docs/images/os-details
+* https://developer.hashicorp.com/packer/integrations/hashicorp/googlecompute/latest/components/builder/googlecompute
+* 
