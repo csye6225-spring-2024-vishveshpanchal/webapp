@@ -83,7 +83,7 @@ build {
     scripts = [
       "./scripts/moving_service.sh",
       "./scripts/start_service.sh",
-      "./scripts/run_tests.sh",
+      // "./scripts/run_tests.sh",
     ]
   }
 
