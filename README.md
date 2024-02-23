@@ -43,4 +43,9 @@ zip -r webapp-fork.zip webapp-fork -x ./webapp-fork/node_modules/\* -x ./webapp-
 * https://cloud.google.com/sdk/docs/install-sdk
 * https://cloud.google.com/compute/docs/images/os-details
 * https://developer.hashicorp.com/packer/integrations/hashicorp/googlecompute/latest/components/builder/googlecompute
-* 
+
+
+## Running the project
+* We could change the `.env` file for the webapp application in the GitHub secrets, packer project's `creating_webapp_env.sh` script file in `packer/scripts/creating_webapp_env.sh`, `environment_vars` attribute of shell provisioner in `webapp.pkr.hcl` file.
+* Along with the above changes, we could do the required changes in `packer/dev.pkrvars.hcl`.
+* If you change the project ID in `dev.pkrvars.hcl` then replace the service account `*.json` file in `packer/` with a new one and also change it in the GitHub secrets.
