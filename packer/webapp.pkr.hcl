@@ -22,7 +22,7 @@ source "googlecompute" "centos" {
   disable_default_service_account = var.centos_disable_default_service_account
   machine_type                    = var.centos_machine_type
   image_name                      = format("%s-%s", var.centos_image_name, local.date_time_stamp)
-  ssh_username                    = var.centos_ssh_username1
+  ssh_username                    = var.centos_ssh_username
 }
 
 
