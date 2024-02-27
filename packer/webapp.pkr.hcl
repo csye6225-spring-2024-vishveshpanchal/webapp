@@ -18,11 +18,11 @@ source "googlecompute" "centos" {
   # or gcloud compute images list
   zone = var.centos_zone # gcloud compute zones list
 
-  region                       = var.centos_region
+  region                          = var.centos_region
   disable_default_service_account = var.centos_disable_default_service_account
   machine_type                    = var.centos_machine_type
   image_name                      = format("%s-%s", var.centos_image_name, local.date_time_stamp)
-  ssh_username                    = var.centos_ssh_username
+  ssh_username                    = var.centos_ssh_username1
 }
 
 
