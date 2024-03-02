@@ -1,6 +1,6 @@
 // require('dotenv').config();
-require('dotenv').config({ path: '/opt/csye6225/app/.env' });
-console.log(process.env);
+// require('dotenv').config({ path: '/opt/csye6225/app/.env' });
+// console.log(process.env);
 // WorkingDirectory=/opt/csye6225
 
 const express = require('express');
