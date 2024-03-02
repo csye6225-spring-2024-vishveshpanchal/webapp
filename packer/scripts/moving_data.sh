@@ -1,2 +1,2 @@
 #!/bin/sh
-sudo mv /tmp/app /home/csye6225/
+sudo mv /tmp/app /opt/csye6225/
