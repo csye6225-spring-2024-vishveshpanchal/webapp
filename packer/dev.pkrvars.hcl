@@ -1,8 +1,0 @@
-centos_project_id                      = "dev-csye-6225-webapp-1" // centos_project_id = "csye-6225-test-1"
-centos_source_image_family             = "centos-stream-8"
-centos_zone                            = "us-east1-b"
-centos_disable_default_service_account = "false"
-centos_region                          = "us-east1"
-centos_machine_type                    = "e2-standard-4" // centos_machine_type = "e2-micro", "e2-medium"
-centos_image_name                      = "webapp-image"
-centos_ssh_username                    = "centos-ssh"
