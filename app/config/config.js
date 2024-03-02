@@ -1,5 +1,5 @@
-// require('dotenv').config();
-require('dotenv').config({ path: '/opt/csye6225/app/.env' });
+require('dotenv').config();
+// require('dotenv').config({ path: '/opt/csye6225/app/.env' });
 
 module.exports = {
   "development": {
