@@ -1,5 +1,6 @@
 const db = require("../models");
 const utils = require('../utils');
+const logger = require('../loggers/index.js');
 
 const basicAuth = async (req, res, next) => {
     // console.log("basic Auth called");
@@ -11,6 +12,8 @@ const basicAuth = async (req, res, next) => {
 
     // check for basic auth header
     if (!req.headers.authorization || req.headers.authorization.indexOf('Basic ') === -1) {
+        logger.info(`File: middlewares/basicAuth.js | Log: Missing Authorization Header @basicAuth function`);
+        logger.debug(`File: middlewares/basicAuth.js | Log: Missing Authorization Header - Sending response with 401 status @basicAuth function`);
         return res.status(401).json({ message: 'Missing Authorization Header' });
     }
 
@@ -32,7 +35,9 @@ const basicAuth = async (req, res, next) => {
             attributes: ["id", "username", "password", "first_name", "last_name", "account_created", "account_updated"],
         });
         if (userAuthenticated === null) {
-            console.log("username not found!");
+            // console.log("username not found!");
+            logger.info(`File: middlewares/basicAuth.js | Log: Invalid Username, User doesn't exist! @basicAuth function`);
+            logger.debug(`File: middlewares/basicAuth.js | Log: Invalid Username, User doesn't exist in database - Sending response with 401 status @basicAuth function`);
             return res.status(401).end();
         }
         else {
@@ -45,11 +50,15 @@ const basicAuth = async (req, res, next) => {
             const isPasswordCorrect = await utils.encryption.compareHash(password, userAuthenticated.password);
 
             if (!isPasswordCorrect) {
-                console.log("Password is incorrect for username: ", username);
+                // console.log("Password is incorrect for username: ", username);
+                logger.info(`File: middlewares/basicAuth.js | Log: Password Incorrect for Username: ${username} - @basicAuth function`);
+                logger.debug(`File: middlewares/basicAuth.js | Log: Password Incorrect for Username: ${username} - Sending response with 401 status @basicAuth function`);
                 return res.status(401).end();
             }
 
-            console.log("username: ", username, " is now logged in with correct password!");
+            // console.log("username: ", username, " is now logged in with correct password!");
+            logger.info(`File: middlewares/basicAuth.js | Log: Username: ${username} Authenticated and is now logged in with correct Password - @basicAuth function`);
+            logger.debug(`File: middlewares/basicAuth.js | Log: Username: ${username} Authenticated and is now logged in with correct Password - continuing @basicAuth function`);
 
             req.user = {
                 id: userAuthenticated.id,
@@ -70,7 +79,9 @@ const basicAuth = async (req, res, next) => {
         }
 
     } catch (error) {
-        console.log("Error in basic Auth Database access findOne, ", error);
+        // console.log("Error in basic Auth Database access findOne, ", error);
+        logger.debug(`File: middlewares/basicAuth.js | Log: Error in Authenticating User - Sending response with 500 status @basicAuth function`);
+        logger.error(`File: middlewares/basicAuth.js | Log: Error in Authenticating User @updateUserSelf function`);
         return res.status(500).end(); // CHECK!!!!!!!
         // next(); // CHECK!!!!!!!
     }

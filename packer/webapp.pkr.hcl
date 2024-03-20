@@ -49,6 +49,8 @@ build {
     scripts = [
       "./scripts/moving_data.sh",
       "./scripts/update_permissions.sh",
+      "./scripts/adding_OpsAgent.sh",
+      "./scripts/configure_OpsAgent.sh",
       "./scripts/install_services.sh",
       // "./scripts/creating_webapp_env.sh",
       "./scripts/install_npm.sh",
