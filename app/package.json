@@ -12,12 +12,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/pubsub": "^4.3.3",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
     "mysql2": "^3.9.1",
     "node": "^21.6.1",
     "sequelize": "^6.36.0",
+    "url": "^0.11.3",
     "winston": "^3.12.0"
   },
   "devDependencies": {

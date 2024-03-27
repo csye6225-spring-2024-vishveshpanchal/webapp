@@ -44,13 +44,25 @@ module.exports = (sequelize, DataTypes) => {
         validate: {
             isEmail: true,
         }
+    },
+    token: {
+      type: DataTypes.STRING,
+        // allowNull: true,
+        unique: true,
+    },
+    expiryTime: {
+      type: DataTypes.DATE,
+    },
+    verified: {
+      type: DataTypes.STRING,
+        allowNull: false,
     }
   }, {
     sequelize,
     modelName: 'User',
     timestamps: true,
     defaultScope: {
-      attributes: { exclude: ["password"] },
+      attributes: { exclude: ["password", "token"] },
     },
 
     createdAt: 'account_created',
