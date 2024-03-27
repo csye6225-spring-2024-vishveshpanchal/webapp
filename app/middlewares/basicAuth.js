@@ -32,7 +32,7 @@ const basicAuth = async (req, res, next) => {
     try {
         const userAuthenticated = await db.User.findOne({ where: 
             { username: username },
-            attributes: ["id", "username", "password", "first_name", "last_name", "account_created", "account_updated"],
+            attributes: ["id", "username", "password", "first_name", "last_name", "account_created", "account_updated", "verified"],
         });
         if (userAuthenticated === null) {
             // console.log("username not found!");
@@ -67,6 +67,7 @@ const basicAuth = async (req, res, next) => {
                 last_name: userAuthenticated.last_name,
                 account_created: userAuthenticated.account_created,
                 account_updated: userAuthenticated.account_updated,
+                verified: userAuthenticated.verified,
             };
             // req.user = {
             //     id: userAuthenticated.id,
