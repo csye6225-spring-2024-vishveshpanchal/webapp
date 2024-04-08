@@ -32,13 +32,14 @@ jobs:
             - name: Packer Build Machine Image
               run: |
                 packer build -var "centos_project_id=${{ secrets.GCP_WEBAPP_PROJECT_ID }}" -var "centos_source_image_family=${{ secrets.GCP_WEBAPP_SOURCE_IMAGE_FAMILY }}" -var "centos_zone=${{ secrets.GCP_WEBAPP_ZONE }}" -var "centos_disable_default_service_account=${{ secrets.GCP_WEBAPP_DISABLE_DEFAULT_SA }}" -var "centos_region=${{ secrets.GCP_WEBAPP_REGION }}" -var "centos_machine_type=${{ secrets.GCP_WEBAPP_MACHINE_TYPE }}" -var "centos_image_name=${{ secrets.GCP_WEBAPP_IMAGE_NAME }}" -var "centos_ssh_username=${{ secrets.GCP_WEBAPP_SSH_USERNAME }}" $GITHUB_WORKSPACE/packer/. 2>&1 | tee $GITHUB_WORKSPACE/data.txt
-                output=$(awk -F'project: ' '/project:/ && $2 {sub(/^[[:space:]]*/, "", $2); print substr($2, 4)}' $GITHUB_WORKSPACE/data.txt)
-                echo "Above is data3.txt"
+                output=$(output=$(awk -F'project: ' '/project:/ && $2 {sub(/^[[:space:]]*/, "", $2); print $2}' $GITHUB_WORKSPACE/data.txt)
                 echo "$output"
+                echo "::set-output name=build-output::$output"
 
     create-new-instance-template:
       needs: packer-build
       runs-on: ubuntu-latest
       steps:
           - name: Create New Instance Template
-            run: gcloud beta compute instance-templates create instance-template-webapp-2 --project=dev-csye-6225-webapp-1 --machine-type=e2-medium --network-interface=network-tier=STANDARD,subnet=webapp --instance-template-region=us-east1 --metadata=startup-script=\#\!/bin/bash$'\n'touch\ /tmp/.env$'\n'echo\ \"NODE_ENV=production\"\ \>\>\ /tmp/.env$'\n'echo\ \"PORT=3000\"\ \>\>\ /tmp/.env$'\n'echo\ \"DB_PORT_PROD=3306\"\ \>\>\ /tmp/.env$'\n'echo\ \"DB_HOST_PROD=192.168.2.5\"\ \>\>\ /tmp/.env$'\n'echo\ \"DB_USERNAME_PROD=webapp-username\"\ \>\>\ /tmp/.env$'\n'echo\ \"DB_PASSWORD_PROD=K2_o\*\{Gdb\"\ \>\>\ /tmp/.env$'\n'echo\ \"DB_NAME_PROD=webapp-db-test\"\ \>\>\ /tmp/.env$'\n'echo\ \"GCP_PROJECT_ID=dev-csye-6225-webapp-1\"\ \>\>\ /tmp/.env$'\n'echo\ \"GCP_PUBSUB_TOPIC_ID=projects/dev-csye-6225-webapp-1/topics/verify_email\"\ \>\>\ /tmp/.env$'\n'mv\ /tmp/.env\ /opt/csye6225/app/.env$'\n'chown\ -R\ csye6225:csye6225\ /opt/csye6225/app$'\n'sudo\ systemctl\ start\ csye6225.service$'\n' --maintenance-policy=MIGRATE --provisioning-model=STANDARD --service-account=service-account-logging@dev-csye-6225-webapp-1.iam.gserviceaccount.com --scopes=https://www.googleapis.com/auth/cloud-platform --region=us-east1 --tags=webapp-firewall --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/dev-csye-6225-webapp-1/global/images/webapp-image-2024-mar-27-19-21-41,kms-key=projects/dev-csye-6225-webapp-1/locations/us-east1/keyRings/keyring-vm/cryptoKeys/crypto-key-vm,mode=rw,size=20,type=pd-standard --no-shielded-secure-boot --reservation-affinity=any
+            run: |
+              echo "Output from Packer Build: ${{ needs.packer-build.outputs.build-output }}"
