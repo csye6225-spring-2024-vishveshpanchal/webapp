@@ -42,8 +42,8 @@ const createDatabaseIfNotPresent = async () => {
         });
     } catch (error) {
         // console.error(`Error creating database: ${error.message}`);
-        logger.debug(`File: models/index.js | Log: Error creating Database ${database} - @createDatabaseIfNotPresent function`);
-        logger.error(`File: models/index.js | Log: Error creating Database ${database} - @createDatabaseIfNotPresent function`);
+        logger.debug(`File: models/index.js | Log: Error creating Database - @createDatabaseIfNotPresent function`);
+        logger.error(`File: models/index.js | Log: Error creating Database - @createDatabaseIfNotPresent function`);
     }
 }
 
@@ -56,8 +56,8 @@ const closeDatabaseConnection = async () => {
         logger.info(`File: models/index.js | Log: Database Closed - @closeDatabaseConnection function`);
     } catch (error) {
         // console.error(`Error closing database: ${error.message}`);
-        logger.debug(`File: models/index.js | Log: Error closing Database ${database} - @closeDatabaseConnection function`);
-        logger.error(`File: models/index.js | Log: Error closing Database ${database} - @closeDatabaseConnection function`);
+        logger.debug(`File: models/index.js | Log: Error closing Database - @closeDatabaseConnection function`);
+        logger.error(`File: models/index.js | Log: Error closing Database - @closeDatabaseConnection function`);
     }
 };
 
