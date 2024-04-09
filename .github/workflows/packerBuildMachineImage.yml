@@ -34,7 +34,8 @@ jobs:
             - name: Packer Build Machine Image
               id: custom-machine-image-name
               run: |
-                image_name="abc"
+                image_name=$(packer build -var "centos_project_id=${{ secrets.GCP_WEBAPP_PROJECT_ID }}" -var "centos_source_image_family=${{ secrets.GCP_WEBAPP_SOURCE_IMAGE_FAMILY }}" -var "centos_zone=${{ secrets.GCP_WEBAPP_ZONE }}" -var "centos_disable_default_service_account=${{ secrets.GCP_WEBAPP_DISABLE_DEFAULT_SA }}" -var "centos_region=${{ secrets.GCP_WEBAPP_REGION }}" -var "centos_machine_type=${{ secrets.GCP_WEBAPP_MACHINE_TYPE }}" -var "centos_image_name=${{ secrets.GCP_WEBAPP_IMAGE_NAME }}" -var "centos_ssh_username=${{ secrets.GCP_WEBAPP_SSH_USERNAME }}" $GITHUB_WORKSPACE/packer/. | grep -oP 'A disk image was created in the .+ project: \K[^ ]+' | cut -c13-)
+                echo "Machine Image Name: $image_name"
                 echo "image_name=$image_name" >> "$GITHUB_OUTPUT"
 
     create-instance-update-instance-group:
@@ -82,7 +83,7 @@ jobs:
                     --scopes=https://www.googleapis.com/auth/cloud-platform \
                     --region=${{ secrets.GCP_INST_TEMPL_REGION }} \
                     --tags=${{ secrets.GCP_INST_TEMPL_TAGS }} \
-                    --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{ secrets.GCP_PROJECT_ID }}/global/images/webapp-image${{ needs.packer-build.outputs.image_name }},kms-key=projects/${{ secrets.GCP_PROJECT_ID }}/locations/${{ secrets.GCP_INST_TEMPL_REGION }}/keyRings/${{ secrets.GCP_INST_TEMPL_KEYRING_NAME }}/cryptoKeys/${{ secrets.GCP_INST_TEMPL_CRYPTO_KEY }},mode=rw,size=20,type=pd-standard \
+                    --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{ secrets.GCP_PROJECT_ID }}/global/images/${{ needs.packer-build.outputs.image_name }},kms-key=projects/${{ secrets.GCP_PROJECT_ID }}/locations/${{ secrets.GCP_INST_TEMPL_REGION }}/keyRings/${{ secrets.GCP_INST_TEMPL_KEYRING_NAME }}/cryptoKeys/${{ secrets.GCP_INST_TEMPL_CRYPTO_KEY }},mode=rw,size=20,type=pd-standard \
                     --no-shielded-secure-boot \
                     --reservation-affinity=any
             - name: Start Managed Instance Group Rolling Update
