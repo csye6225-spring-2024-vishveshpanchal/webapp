@@ -36,7 +36,7 @@ jobs:
               run: |
                 image_name=$(packer build -var "centos_project_id=${{ secrets.GCP_WEBAPP_PROJECT_ID }}" -var "centos_source_image_family=${{ secrets.GCP_WEBAPP_SOURCE_IMAGE_FAMILY }}" -var "centos_zone=${{ secrets.GCP_WEBAPP_ZONE }}" -var "centos_disable_default_service_account=${{ secrets.GCP_WEBAPP_DISABLE_DEFAULT_SA }}" -var "centos_region=${{ secrets.GCP_WEBAPP_REGION }}" -var "centos_machine_type=${{ secrets.GCP_WEBAPP_MACHINE_TYPE }}" -var "centos_image_name=${{ secrets.GCP_WEBAPP_IMAGE_NAME }}" -var "centos_ssh_username=${{ secrets.GCP_WEBAPP_SSH_USERNAME }}" $GITHUB_WORKSPACE/packer/. | grep -oP 'A disk image was created in the .+ project: \K[^ ]+' | cut -c13-)
                 echo "Machine Image Name: $image_name"
-                echo "image_name=$image_name" >> "$GITHUB_OUTPUT"
+                echo "image_name=webapp-image$image_name" >> "$GITHUB_OUTPUT"
 
     create-instance-update-instance-group:
         needs: packer-build
