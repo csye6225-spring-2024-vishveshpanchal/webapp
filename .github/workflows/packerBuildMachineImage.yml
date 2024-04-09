@@ -66,6 +66,7 @@ jobs:
                     --format='value(displayName)' \
                     --limit=1)
                   echo "webapp_image_name: $webapp_image_name" >> "$GITHUB_ENV"
+                  echo "webapp_image_name: $webapp_image_name"
                   echo "Using machine image name: ${{ needs.packer-build.outputs.image_name }}"
                   gcloud beta compute instance-templates create "$new_template_name" \
                     --project=${{ secrets.GCP_PROJECT_ID }} \
