@@ -65,7 +65,7 @@ jobs:
                     --asset-types='compute.googleapis.com/Image' \
                     --format='value(displayName)' \
                     --limit=1)
-                  echo "webapp_image_name: $webapp_image_name"
+                  echo "webapp_image_name: $webapp_image_name" >> "$GITHUB_ENV"
                   echo "Using machine image name: ${{ needs.packer-build.outputs.image_name }}"
                   gcloud beta compute instance-templates create "$new_template_name" \
                     --project=${{ secrets.GCP_PROJECT_ID }} \
@@ -96,7 +96,7 @@ jobs:
                     --scopes=https://www.googleapis.com/auth/cloud-platform \
                     --region=${{ secrets.GCP_INST_TEMPL_REGION }} \
                     --tags=${{ secrets.GCP_INST_TEMPL_TAGS }} \
-                    --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{ secrets.GCP_PROJECT_ID }}/global/images/${{ secrets.GCP_WEBAPP_IMAGE_NAME }}$webapp_image_name,kms-key=projects/${{ secrets.GCP_PROJECT_ID }}/locations/${{ secrets.GCP_INST_TEMPL_REGION }}/keyRings/${{ secrets.GCP_INST_TEMPL_KEYRING_NAME }}/cryptoKeys/${{ secrets.GCP_INST_TEMPL_CRYPTO_KEY }},mode=rw,size=20,type=pd-standard \
+                    --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{ secrets.GCP_PROJECT_ID }}/global/images/${{ secrets.GCP_WEBAPP_IMAGE_NAME }}"$webapp_image_name",kms-key=projects/${{ secrets.GCP_PROJECT_ID }}/locations/${{ secrets.GCP_INST_TEMPL_REGION }}/keyRings/${{ secrets.GCP_INST_TEMPL_KEYRING_NAME }}/cryptoKeys/${{ secrets.GCP_INST_TEMPL_CRYPTO_KEY }},mode=rw,size=20,type=pd-standard \
                     --no-shielded-secure-boot \
                     --no-shielded-vtpm \
                     --no-shielded-integrity-monitoring \
