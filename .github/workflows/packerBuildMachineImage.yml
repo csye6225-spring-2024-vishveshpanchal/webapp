@@ -49,7 +49,7 @@ jobs:
 
             - name: Generate New Name for New Instance Template
               id : new-instance-template-name
-              run: echo new_template_name=instance-template-$(date +"%Y-%m-%d-%H-%M-%S") >> "$GITHUB_ENV"
+              run: echo "new_template_name=instance-template-$(date +"%Y-%m-%d-%H-%M-%S")" >> "$GITHUB_ENV"
 
             - name: Create New Instance Template
               run: |
