@@ -5,13 +5,11 @@ on: [push]
 jobs:
     packer-build:
         runs-on: ubuntu-latest
+        outputs:
+          image_name: ${{ steps.custom-machine-image-name.outputs.image_name }}
         defaults:
             run:
                 working-directory: packer
-        outputs:
-          image_name:  # Define output variable (without -output)
-          description: "Custom Machine Image Name"
-          value: ${{ steps.custom-machine-image-name.outputs.image_name }}  # Reference step output
         name: Packer Build Machine Image
         steps:
             - name: Source Code Checkout
@@ -33,20 +31,76 @@ jobs:
             - name: Packer Validate
               run: 'packer validate -var "centos_project_id=${{ secrets.GCP_WEBAPP_PROJECT_ID }}" -var "centos_source_image_family=${{ secrets.GCP_WEBAPP_SOURCE_IMAGE_FAMILY }}" -var "centos_zone=${{ secrets.GCP_WEBAPP_ZONE }}" -var "centos_disable_default_service_account=${{ secrets.GCP_WEBAPP_DISABLE_DEFAULT_SA }}" -var "centos_region=${{ secrets.GCP_WEBAPP_REGION }}" -var "centos_machine_type=${{ secrets.GCP_WEBAPP_MACHINE_TYPE }}" -var "centos_image_name=${{ secrets.GCP_WEBAPP_IMAGE_NAME }}" -var "centos_ssh_username=${{ secrets.GCP_WEBAPP_SSH_USERNAME }}" $GITHUB_WORKSPACE/packer/. '
 
-            - id: custom-machine-image-name
-              name: Packer Build Machine Image
+            - name: Packer Build Machine Image
+              id: custom-machine-image-name
               run: |
-                packer build -var "centos_project_id=${{ secrets.GCP_WEBAPP_PROJECT_ID }}" -var "centos_source_image_family=${{ secrets.GCP_WEBAPP_SOURCE_IMAGE_FAMILY }}" -var "centos_zone=${{ secrets.GCP_WEBAPP_ZONE }}" -var "centos_disable_default_service_account=${{ secrets.GCP_WEBAPP_DISABLE_DEFAULT_SA }}" -var "centos_region=${{ secrets.GCP_WEBAPP_REGION }}" -var "centos_machine_type=${{ secrets.GCP_WEBAPP_MACHINE_TYPE }}" -var "centos_image_name=${{ secrets.GCP_WEBAPP_IMAGE_NAME }}" -var "centos_ssh_username=${{ secrets.GCP_WEBAPP_SSH_USERNAME }}" $GITHUB_WORKSPACE/packer/. 2>&1 | tee $GITHUB_WORKSPACE/data.txt
-                image_name=$(awk -F'project: ' '/project:/ && $2 {sub(/^[[:space:]]*/, "", $2); print substr($2, 13)}' $GITHUB_WORKSPACE/data.txt)
-                echo "Image Name: $image_name"
-                echo "::set-output name=image_name::$image_name"  # No longer needed
+                image_name=$(packer build -var "centos_project_id=${{ secrets.GCP_WEBAPP_PROJECT_ID }}" -var "centos_source_image_family=${{ secrets.GCP_WEBAPP_SOURCE_IMAGE_FAMILY }}" -var "centos_zone=${{ secrets.GCP_WEBAPP_ZONE }}" -var "centos_disable_default_service_account=${{ secrets.GCP_WEBAPP_DISABLE_DEFAULT_SA }}" -var "centos_region=${{ secrets.GCP_WEBAPP_REGION }}" -var "centos_machine_type=${{ secrets.GCP_WEBAPP_MACHINE_TYPE }}" -var "centos_image_name=${{ secrets.GCP_WEBAPP_IMAGE_NAME }}" -var "centos_ssh_username=${{ secrets.GCP_WEBAPP_SSH_USERNAME }}" $GITHUB_WORKSPACE/packer/. | grep -oP 'A disk image was created in the .+ project: \K[^ ]+')
+                echo "Machine Image Name: $image_name"
+                echo "image_name=$image_name" >> "$GITHUB_OUTPUT"
 
-    create-new-instance-template:
-      needs: packer-build
-      runs-on: ubuntu-latest
-      steps:
-        - env:
-            name: Create New Instance Template
-            IMAGENAMEOUTPUT: ${{ needs.packer-build.outputs.image_name }}  # Access output variable
-          run: |
-            echo "Output from Packer Build: $IMAGENAMEOUTPUT"
+    create-instance-update-instance-group:
+        needs: packer-build
+        runs-on: ubuntu-latest
+        steps:
+            - name: Authenticating with GCP Service Account
+              uses: "google-github-actions/auth@v1"
+              with:
+                  credentials_json: ${{ secrets.GCP_SA_CREDENTIALS }}
+
+            - name: Generate New Name for New Instance Template
+              id : new-instance-template-name
+              run: echo new_template_name=instance-template-webapp-$(date +"%d-%m-%Y-%H-%M-%S") >> "$GITHUB_ENV"
+
+            - name: Create New Instance Template
+              run: |
+                  echo "Using machine image name: ${{ needs.packer-build.outputs.image_name }}"
+                  gcloud beta compute instance-templates create "$new_template_name" \
+                    --project=${{ secrets.GCP_PROJECT_ID }} \
+                    --machine-type=${{ secrets.GCP_INST_TEMPL_MACHINE_TYPE }} \
+                    --network-interface=network-tier=${{ secrets.GCP_INST_TEMPL_NETWORK_TIER }},subnet=${{ secrets.GCP_INST_TEMPL_SUBNET }} \
+                    --instance-template-region=${{ secrets.GCP_INST_TEMPL_REGION }} \
+                    --metadata=startup-script="#!/bin/bash
+
+                      touch /tmp/.env
+                      echo \"NODE_ENV=${{ secrets.GCP_INST_TEMPL_NODE_ENV }}\" >> /tmp/.env
+                      echo \"PORT=${{ secrets.GCP_INST_TEMPL_PORT }}\" >> /tmp/.env
+                      
+                      echo \"DB_PORT_PROD=${{ secrets.GCP_INST_TEMPL_CLOUD_SQL_DB_PORT_PROD }}\" >> /tmp/.env
+                      echo \"DB_HOST_PROD=${{ secrets.GCP_INST_TEMPL_CLOUD_SQL_DB_HOST_PROD }}\" >> /tmp/.env
+                      echo \"DB_USERNAME_PROD=${{ secrets.GCP_INST_TEMPL_CLOUD_SQL_DB_USERNAME_PROD }}\" >> /tmp/.env
+                      echo \"DB_PASSWORD_PROD=${{ secrets.GCP_INST_TEMPL_CLOUD_SQL_DB_PASSWORD_PROD }}\" >> /tmp/.env
+                      echo \"DB_NAME_PROD=${{ secrets.GCP_INST_TEMPL_CLOUD_SQL_DB_NAME_PROD }}\" >> /tmp/.env
+                      echo \"GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}\" >> /tmp/.env
+                      echo \"GCP_PUBSUB_TOPIC_ID=${{ secrets.GCP_INST_TEMPL_PUBSUB_TOPIC_ID }}\" >> /tmp/.env
+                      
+                      mv /tmp/.env /opt/csye6225/app/.env
+                      chown -R csye6225:csye6225 /opt/csye6225/app
+
+                      sudo systemctl start csye6225.service" \
+                    --maintenance-policy=MIGRATE \
+                    --provisioning-model=STANDARD \
+                    --service-account=${{ secrets.GCP_INST_TEMPL_SERVICE_ACC }} \
+                    --scopes=https://www.googleapis.com/auth/cloud-platform \
+                    --region=${{ secrets.GCP_INST_TEMPL_REGION }} \
+                    --tags=${{ secrets.GCP_INST_TEMPL_TAGS }} \
+                    --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{ secrets.GCP_PROJECT_ID }}/global/images/${{ needs.packer-build.outputs.image_name }},kms-key=projects/${{ secrets.GCP_PROJECT_ID }}/locations/${{ secrets.GCP_INST_TEMPL_REGION }}/keyRings/${{ secrets.GCP_INST_TEMPL_KEYRING_NAME }}/cryptoKeys/${{ secrets.GCP_INST_TEMPL_CRYPTO_KEY }},mode=rw,size=20,type=pd-standard \
+                    --no-shielded-secure-boot \
+                    --reservation-affinity=any
+            - name: Start Managed Instance Group Rolling Update
+              run: |
+                    gcloud beta compute instance-groups managed rolling-action start-update ${{ secrets.GCP_INSTANCE_GROUP_MANAGER }} \
+                    --project=${{ secrets.GCP_PROJECT_ID }} \
+                    --type='proactive' \
+                    --max-surge=3 \
+                    --max-unavailable=0 \
+                    --min-ready=0 \
+                    --minimal-action='replace' \
+                    --most-disruptive-allowed-action='replace' \
+                    --replacement-method='substitute' \
+                    --version=template=projects/${{ secrets.GCP_PROJECT_ID }}/regions/${{ secrets.GCP_INST_TEMPL_REGION }}/instanceTemplates/"$new_template_name" \
+                    --region=${{ secrets.GCP_INST_TEMPL_REGION }}
+            - name: Check Managed Instance Group Status
+              run: |
+                  gcloud compute instance-groups managed wait-until ${{ secrets.GCP_INSTANCE_GROUP_MANAGER }} \
+                    --version-target-reached \
+                    --region=${{ secrets.GCP_INST_TEMPL_REGION }}
