@@ -59,7 +59,7 @@ jobs:
 
             - name: Create New Instance Template
               run: |
-                  webapp_image_name=$(gcloud beta asset search-all-resources --scope='projects/dev-csye-6225-webapp-1' \
+                  webapp_image_name=$(gcloud asset search-all-resources --scope='projects/dev-csye-6225-webapp-1' \
                     --query='name:webapp-image*' \
                     --order-by='createTime desc' \
                     --asset-types='compute.googleapis.com/Image' \
@@ -97,7 +97,7 @@ jobs:
                     --scopes=https://www.googleapis.com/auth/cloud-platform \
                     --region=${{ secrets.GCP_INST_TEMPL_REGION }} \
                     --tags=${{ secrets.GCP_INST_TEMPL_TAGS }} \
-                    --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{ secrets.GCP_PROJECT_ID }}/global/images/${{ secrets.GCP_WEBAPP_IMAGE_NAME }}"$webapp_image_name",kms-key=projects/${{ secrets.GCP_PROJECT_ID }}/locations/${{ secrets.GCP_INST_TEMPL_REGION }}/keyRings/${{ secrets.GCP_INST_TEMPL_KEYRING_NAME }}/cryptoKeys/${{ secrets.GCP_INST_TEMPL_CRYPTO_KEY }},mode=rw,size=20,type=pd-standard \
+                    --create-disk=auto-delete=yes,boot=yes,device-name=persistent-disk-0,image=projects/${{ secrets.GCP_PROJECT_ID }}/global/images/"$webapp_image_name",kms-key=projects/${{ secrets.GCP_PROJECT_ID }}/locations/${{ secrets.GCP_INST_TEMPL_REGION }}/keyRings/${{ secrets.GCP_INST_TEMPL_KEYRING_NAME }}/cryptoKeys/${{ secrets.GCP_INST_TEMPL_CRYPTO_KEY }},mode=rw,size=20,type=pd-standard \
                     --no-shielded-secure-boot \
                     --no-shielded-vtpm \
                     --no-shielded-integrity-monitoring \
