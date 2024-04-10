@@ -101,7 +101,6 @@ jobs:
                     --no-shielded-secure-boot \
                     --no-shielded-vtpm \
                     --no-shielded-integrity-monitoring \
-                    --local-ssd=interface=SCSI \
                     --reservation-affinity=any
             - name: Start Managed Instance Group Rolling Update
               run: |
