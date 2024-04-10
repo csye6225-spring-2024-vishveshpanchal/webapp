@@ -1,4 +1,4 @@
-name: Packer Build Machine Image
+name: Packer Build Machine Image, Create New Instance Template, Update MIG
 
 on: [push]
 
