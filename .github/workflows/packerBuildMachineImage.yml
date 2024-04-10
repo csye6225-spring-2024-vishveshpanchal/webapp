@@ -5,8 +5,6 @@ on: [push]
 jobs:
     packer-build:
         runs-on: ubuntu-latest
-        outputs:
-          image_name: ${{ steps.custom-machine-image-name.outputs.image_name }}
         defaults:
             run:
                 working-directory: packer
@@ -35,14 +33,6 @@ jobs:
               id: custom-machine-image-name
               run: |
                 packer build -var "centos_project_id=${{ secrets.GCP_WEBAPP_PROJECT_ID }}" -var "centos_source_image_family=${{ secrets.GCP_WEBAPP_SOURCE_IMAGE_FAMILY }}" -var "centos_zone=${{ secrets.GCP_WEBAPP_ZONE }}" -var "centos_disable_default_service_account=${{ secrets.GCP_WEBAPP_DISABLE_DEFAULT_SA }}" -var "centos_region=${{ secrets.GCP_WEBAPP_REGION }}" -var "centos_machine_type=${{ secrets.GCP_WEBAPP_MACHINE_TYPE }}" -var "centos_image_name=${{ secrets.GCP_WEBAPP_IMAGE_NAME }}" -var "centos_ssh_username=${{ secrets.GCP_WEBAPP_SSH_USERNAME }}" $GITHUB_WORKSPACE/packer/.
-                image_name=$(gcloud beta asset search-all-resources --scope='projects/dev-csye-6225-webapp-1' \
-                --query='name:webapp-image*' \
-                --order-by='createTime desc' \
-                --asset-types='compute.googleapis.com/Image' \
-                --format='value(displayName)' \
-                --limit=1)
-                echo "Machine Image Name: $image_name"
-                echo "image_name=$image_name" >> "$GITHUB_OUTPUT"
 
     create-instance-update-instance-group:
         needs: packer-build
@@ -59,15 +49,14 @@ jobs:
 
             - name: Create New Instance Template
               run: |
-                  webapp_image_name=$(gcloud asset search-all-resources --scope='projects/dev-csye-6225-webapp-1' \
-                    --query='name:webapp-image*' \
+                  webapp_image_name=$(gcloud asset search-all-resources --scope='projects/${{ secrets.GCP_PROJECT_ID }}' \
+                    --query='name:web*' \
                     --order-by='createTime desc' \
                     --asset-types='compute.googleapis.com/Image' \
                     --format='value(displayName)' \
                     --limit=1)
                   echo "webapp_image_name=$webapp_image_name" >> "$GITHUB_ENV"
                   echo "webapp_image_name: $webapp_image_name"
-                  echo "Using machine image name: ${{ needs.packer-build.outputs.image_name }}"
                   gcloud beta compute instance-templates create "$new_template_name" \
                     --project=${{ secrets.GCP_PROJECT_ID }} \
                     --machine-type=${{ secrets.GCP_INST_TEMPL_MACHINE_TYPE }} \
