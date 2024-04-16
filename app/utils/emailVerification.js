@@ -34,7 +34,7 @@ const generateLinkViaUUID = async (uuid, email) => {
                             + domainName.toString() 
                             + ":" 
                             + applicationPort.toString() 
-                            + "/v1/user/verify?email=" 
+                            + "/v2/user/verify?email=" 
                             + email.toString() 
                             + "&token=" + uuid.toString();
     

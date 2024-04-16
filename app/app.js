@@ -14,7 +14,7 @@ app.use(middlewares.checkDatabaseConnection);
 app.use(middlewares.handleBadPayload);
 
 app.use('/healthz', routes.healthz);
-app.use('/v1/user', routes.user);
+app.use('/v2/user', routes.user);
 app.use('/*', routes.random);
 
 module.exports = {

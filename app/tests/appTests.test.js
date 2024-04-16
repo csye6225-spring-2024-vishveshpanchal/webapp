@@ -22,7 +22,7 @@ beforeAll(async () => {
 
   test("Test 1 - Create an account, and using the GET call, validate account exists.", async () => {
     const postCreateUserResponse = await request(app)
-      .post("/v1/user")
+      .post("/v2/user")
       .send(userObj)
       .set("Accept", "application/json")
       .expect("Cache-Control", /no-cache, must-revalidate/)
@@ -32,7 +32,7 @@ beforeAll(async () => {
     delete postCreateUserResponse.body.account_updated;
 
     const getGetUserResponse = await request(app)
-      .get("/v1/user/self")
+      .get("/v2/user/self")
       .auth(userObj.username, userObj.password)
       .expect("Cache-Control", /no-cache, must-revalidate/)
       .expect(200);
@@ -51,7 +51,7 @@ beforeAll(async () => {
     };
 
     const putUpdateUserResponse = await request(app)
-      .put("/v1/user/self")
+      .put("/v2/user/self")
       .auth(userObj.username, userObj.password)
       .send(updatedUserObj)
       .set("Accept", "application/json")
@@ -59,7 +59,7 @@ beforeAll(async () => {
       .expect(204);
 
     const getGetUserResponse = await request(app)
-      .get("/v1/user/self")
+      .get("/v2/user/self")
       .auth(userObj.username, updatedUserObj.password)
       .expect("Cache-Control", /no-cache, must-revalidate/)
       .expect(200);
